@@ -4,9 +4,9 @@ import java.util.*;
 public class User implements Serializable {
     private final String username;
     private final String password;
-    private final Map<String, Double> income = new HashMap<>();
-    private final Map<String, Double> expenses = new HashMap<>();
-    private final Map<String, Double> budgets = new HashMap<>();
+    private final Map<String, Double> incomeMap = new HashMap<>();
+    private final Map<String, Double> expenseMap = new HashMap<>();
+    private final Map<String, Double> budgetMap = new HashMap<>();
 
     public User(String username, String password) {
         this.username = username;
@@ -17,39 +17,39 @@ public class User implements Serializable {
         return username;
     }
 
-    public boolean validatePassword(String inputPassword) {
-        return password.equals(inputPassword);
+    public boolean authenticate(String password) {
+        return this.password.equals(password);
     }
 
     public void addIncome(String category, double amount) {
-        income.put(category, income.getOrDefault(category, 0.0) + amount);
+        incomeMap.put(category, incomeMap.getOrDefault(category, 0.0) + amount);
     }
 
     public boolean addExpense(String category, double amount) {
-        double totalIncome = income.values().stream().mapToDouble(Double::doubleValue).sum();
-        double totalExpenses = expenses.values().stream().mapToDouble(Double::doubleValue).sum();
+        double totalIncome = incomeMap.values().stream().mapToDouble(Double::doubleValue).sum();
+        double totalExpenses = expenseMap.values().stream().mapToDouble(Double::doubleValue).sum();
         if (totalIncome - totalExpenses >= amount) {
-            expenses.put(category, expenses.getOrDefault(category, 0.0) + amount);
+            expenseMap.put(category, expenseMap.getOrDefault(category, 0.0) + amount);
             return true;
         }
         return false;
     }
 
     public void setBudget(String category, double budget) {
-        budgets.put(category, budget);
+        budgetMap.put(category, budget);
     }
 
-    public void showStatistics() {
-        System.out.println("\nСтатистика:");
-        double totalIncome = income.values().stream().mapToDouble(Double::doubleValue).sum();
-        double totalExpenses = expenses.values().stream().mapToDouble(Double::doubleValue).sum();
+    public void displayFinancialOverview() {
+        System.out.println("\nФинансовая информация:");
+        double totalIncome = incomeMap.values().stream().mapToDouble(Double::doubleValue).sum();
+        double totalExpenses = expenseMap.values().stream().mapToDouble(Double::doubleValue).sum();
         System.out.println("Общий доход: " + totalIncome);
         System.out.println("Общие расходы: " + totalExpenses);
 
         System.out.println("\nБюджет по категориям:");
-        for (String category : budgets.keySet()) {
-            double budget = budgets.get(category);
-            double spent = expenses.getOrDefault(category, 0.0);
+        for (String category : budgetMap.keySet()) {
+            double budget = budgetMap.get(category);
+            double spent = expenseMap.getOrDefault(category, 0.0);
             System.out.printf("Категория: %s, Бюджет: %.2f, Потрачено: %.2f, Остаток: %.2f\n",
                     category, budget, spent, budget - spent);
         }
